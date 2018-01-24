@@ -38,7 +38,6 @@ L["Purchase Bags"] = "购买背包"
 L["Purchase"] = "购买"
 L["Reagent Bank"] = "材料银行"
 L["Reset Position"] = "重设位置"
-L["Right Click the bag icon to assign a type of item to this bag."] = "右键点击背包按钮来选择将某一类型的物品放在此背包中"
 L["Show/Hide Reagents"] = "显示/隐藏材料"
 L["Sort Tab"] = "选项排列" --Not used, yet?
 L["Temporary Move"] = '移动背包'

@@ -38,7 +38,6 @@ L["Purchase Bags"] = "Comprar Bolsas"
 L["Purchase"] = "Comprar"
 L["Reagent Bank"] = "Banco de Componentes"
 L["Reset Position"] = "Reestablecer Posición"
-L["Right Click the bag icon to assign a type of item to this bag."] = true
 L["Show/Hide Reagents"] = "Mostrar/Ocultar Componentes"
 L["Sort Tab"] = "Ordenar Pestaña"
 L["Temporary Move"] = "Movimiento Temporal"

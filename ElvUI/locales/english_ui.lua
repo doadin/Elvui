@@ -38,7 +38,6 @@ L["Purchase Bags"] = true
 L["Purchase"] = true
 L["Reagent Bank"] = true
 L["Reset Position"] = true
-L["Right Click the bag icon to assign a type of item to this bag."] = true
 L["Show/Hide Reagents"] = true
 L["Sort Tab"] = true --Not used, yet?
 L["Temporary Move"] = true

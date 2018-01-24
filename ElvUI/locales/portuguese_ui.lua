@@ -38,7 +38,6 @@ L["Purchase Bags"] = true
 L["Purchase"] = "Comprar"
 L["Reagent Bank"] = true
 L["Reset Position"] = "Redefinir Posição"
-L["Right Click the bag icon to assign a type of item to this bag."] = true
 L["Show/Hide Reagents"] = true
 L["Sort Tab"] = "Aba de Organização"
 L["Temporary Move"] = "Mover Temporariamente"

@@ -38,7 +38,6 @@ L["Purchase Bags"] = "가방 슬롯 구입"
 L["Purchase"] = "구입"
 L["Reagent Bank"] = REAGENT_BANK
 L["Reset Position"] = "위치 초기화"
-L["Right Click the bag icon to assign a type of item to this bag."] = true
 L["Show/Hide Reagents"] = "재료은행 표시"
 L["Sort Tab"] = "탭 정렬" --Not used, yet?
 L["Temporary Move"] = "임시 이동"

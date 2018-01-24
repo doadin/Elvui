@@ -565,6 +565,7 @@ function B:REAGENTBANK_PURCHASED()
 	ElvUIReagentBankFrame.cover:Hide()
 end
 
+--This is a copy from FrameXML/ContainerFrame.lua which has been modified slightly
 local function ContainerFrameFilterDropDown_Initialize(self, level)
 	local frame = self:GetParent()
 	local id = frame.id
@@ -715,6 +716,35 @@ function B:Layout(isBank)
 								local id = self:GetID();
 								PutItemInBag(id);--Put bag on empty slot, or drop item in this bag
 							end
+						end)
+						f.ContainerHolder[i].FilterIcon = CreateFrame("Button", nil, f.ContainerHolder[i])
+						f.ContainerHolder[i].FilterIcon:Hide()
+						f.ContainerHolder[i].FilterIcon:Size(24, 24)
+						f.ContainerHolder[i].FilterIcon:Point("CENTER", f.ContainerHolder[i], "TOPLEFT", 9, -10)
+						f.ContainerHolder[i].FilterIcon.Icon = f.ContainerHolder[i].FilterIcon:CreateTexture(nil, "OVERLAY")
+						f.ContainerHolder[i].FilterIcon.Icon:SetAtlas("bags-icon-consumables", true)
+						f.ContainerHolder[i].FilterIcon.Icon:Point("CENTER")
+						f.ContainerHolder[i].FilterIcon:RegisterForClicks("LeftButtonUp", "RightButtonUp")
+						f.ContainerHolder[i].FilterIcon:SetScript("OnShow", function(self)
+							self:SetFrameLevel(self:GetParent():GetFrameLevel()+1)
+						end)
+						
+						--Reroute various mouse events to the underlying bag icon
+						f.ContainerHolder[i].FilterIcon:SetScript("OnEnter", function(self)
+							local target = self:GetParent()
+							target:GetScript("OnEnter")(target);
+						end)
+						f.ContainerHolder[i].FilterIcon:SetScript("OnLeave", function(self)
+							local target = self:GetParent()
+							target:GetScript("OnLeave")(target);
+						end)
+						f.ContainerHolder[i].FilterIcon:SetScript("OnClick", function(self, btn)
+							local target = self:GetParent()
+							target:GetScript("OnClick")(target, btn);
+						end)
+						f.ContainerHolder[i].FilterIcon:SetScript("OnReceiveDrag", function(self)
+							local target = self:GetParent()
+							target:GetScript("OnReceiveDrag")(target);
 						end)
 					end
 				end

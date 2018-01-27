@@ -682,6 +682,24 @@ local function ContainerFrameFilterDropDown_Initialize(self, level)
 	L_UIDropDownMenu_AddButton(info);
 end
 
+local function Container_OnShow(self)
+	if not IsInventoryItemProfessionBag("player", ContainerIDToInventoryID(self.id)) then
+		for i = LE_BAG_FILTER_FLAG_EQUIPMENT, NUM_LE_BAG_FILTER_FLAGS do
+			local active = false
+			if (self.id > NUM_BAG_SLOTS) then
+				active = GetBankBagSlotFlag(self.id - NUM_BAG_SLOTS, i)
+			else
+				active = GetBagSlotFlag(self.id, i)
+			end
+			if (active) then
+				self.FilterIcon.Icon:SetAtlas(BAG_FILTER_ICONS[i], true)
+				self.FilterIcon:Show()
+				break
+			end
+		end
+	end
+end
+
 local function CreateFilterIcon(parent)
 	--Create FilterIcon element needed for item type assignment
 	parent.FilterIcon = CreateFrame("Button", nil, parent)
@@ -715,6 +733,9 @@ local function CreateFilterIcon(parent)
 		local target = self:GetParent()
 		target:GetScript("OnReceiveDrag")(target);
 	end)
+
+	--Update FilterIcon texture when container is shown
+	parent:HookScript("OnShow", Container_OnShow)
 end
 
 function B:Layout(isBank)

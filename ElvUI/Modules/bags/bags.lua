@@ -595,12 +595,12 @@ end
 local function ContainerFrameFilterDropDown_Initialize(self, level)
 	local frame = self:GetParent()
 	local id = frame.id
-	
+
 	if (id > NUM_BAG_SLOTS + NUM_BANKBAGSLOTS) then
 		return;
 	end
 
-	local info = L_UIDropDownMenu_CreateInfo();	
+	local info = L_UIDropDownMenu_CreateInfo();
 
 	if (id > 0 and not IsInventoryItemProfessionBag("player", ContainerIDToInventoryID(id))) then -- The actual bank has ID -1, backpack has ID 0, we want to make sure we're looking at a regular or bank bag
 		info.text = BAG_FILTER_ASSIGN_TO;
@@ -629,7 +629,7 @@ local function ContainerFrameFilterDropDown_Initialize(self, level)
 						frame.FilterIcon:Show();
 					else
 						frame.FilterIcon:Hide();
-						frame.localFlag = -1;						
+						frame.localFlag = -1;
 					end
 				end;
 				if (frame.localFlag) then
@@ -682,6 +682,41 @@ local function ContainerFrameFilterDropDown_Initialize(self, level)
 	L_UIDropDownMenu_AddButton(info);
 end
 
+local function CreateFilterIcon(parent)
+	--Create FilterIcon element needed for item type assignment
+	parent.FilterIcon = CreateFrame("Button", nil, parent)
+	parent.FilterIcon:Hide()
+	parent.FilterIcon:Size(24, 24)
+	parent.FilterIcon:Point("CENTER", parent, "TOPLEFT", 9, -10)
+	parent.FilterIcon:RegisterForClicks("LeftButtonUp", "RightButtonUp")
+	parent.FilterIcon:SetScript("OnShow", function(self)
+		self:SetFrameLevel(self:GetParent():GetFrameLevel()+1)
+	end)
+
+	--Create the texture showing the assignment type
+	parent.FilterIcon.Icon = parent.FilterIcon:CreateTexture(nil, "OVERLAY")
+	parent.FilterIcon.Icon:SetAtlas("bags-icon-consumables", true)
+	parent.FilterIcon.Icon:Point("CENTER")
+
+	--Re-route various mouse events to the underlying container bag icon
+	parent.FilterIcon:SetScript("OnEnter", function(self)
+		local target = self:GetParent()
+		target:GetScript("OnEnter")(target);
+	end)
+	parent.FilterIcon:SetScript("OnLeave", function(self)
+		local target = self:GetParent()
+		target:GetScript("OnLeave")(target);
+	end)
+	parent.FilterIcon:SetScript("OnClick", function(self, btn)
+		local target = self:GetParent()
+		target:GetScript("OnClick")(target, btn);
+	end)
+	parent.FilterIcon:SetScript("OnReceiveDrag", function(self)
+		local target = self:GetParent()
+		target:GetScript("OnReceiveDrag")(target);
+	end)
+end
+
 function B:Layout(isBank)
 	if E.private.bags.enable ~= true then return; end
 	local f = self:GetContainerFrame(isBank);
@@ -711,13 +746,17 @@ function B:Layout(isBank)
 			if not f.ContainerHolder[i] then
 				if(isBank) then
 					f.ContainerHolder[i] = CreateFrame("CheckButton", "ElvUIBankBag" .. bagID - 4, f.ContainerHolder, "BankItemButtonBagTemplate")
-					f.ContainerHolder[i]:SetScript('OnClick', function(self)
-						local inventoryID = self:GetInventorySlot();
-						PutItemInBag(inventoryID);--Put bag on empty slot, or drop item in this bag
+					CreateFilterIcon(f.ContainerHolder[i])
+					f.ContainerHolder[i]:SetScript('OnClick', function(self, btn)
+						if btn == "RightButton" then
+							L_ToggleDropDownMenu(1, nil, self.FilterDropDown, self, 0, 0);
+						else
+							local inventoryID = self:GetInventorySlot();
+							PutItemInBag(inventoryID);--Put bag on empty slot, or drop item in this bag
+						end
 					end)
-					f.ContainerHolder[i].id = bagID
 				else
-					if i == 1 then --Backpack needs different setup
+					if bagID == 0 then --Backpack needs different setup
 						f.ContainerHolder[i] = CreateFrame("CheckButton", "ElvUIMainBagBackpack", f.ContainerHolder, "ItemButtonTemplate, ItemAnimTemplate")
 						f.ContainerHolder[i]:RegisterForClicks("LeftButtonUp", "RightButtonUp")
 						f.ContainerHolder[i]:SetScript('OnClick', function(self, btn)
@@ -732,6 +771,7 @@ function B:Layout(isBank)
 						end)
 					else
 						f.ContainerHolder[i] = CreateFrame("CheckButton", "ElvUIMainBag" .. (bagID-1) .. "Slot", f.ContainerHolder, "BagSlotButtonTemplate")
+						CreateFilterIcon(f.ContainerHolder[i])
 						f.ContainerHolder[i]:SetScript('OnClick', function(self, btn)
 							if btn == "RightButton" then
 								L_ToggleDropDownMenu(1, nil, self.FilterDropDown, self, 0, 0);
@@ -739,39 +779,6 @@ function B:Layout(isBank)
 								local id = self:GetID();
 								PutItemInBag(id);--Put bag on empty slot, or drop item in this bag
 							end
-						end)
-
-						--Create FilterIcon element needed for item type assignment
-						f.ContainerHolder[i].FilterIcon = CreateFrame("Button", nil, f.ContainerHolder[i])
-						f.ContainerHolder[i].FilterIcon:Hide()
-						f.ContainerHolder[i].FilterIcon:Size(24, 24)
-						f.ContainerHolder[i].FilterIcon:Point("CENTER", f.ContainerHolder[i], "TOPLEFT", 9, -10)
-						f.ContainerHolder[i].FilterIcon:RegisterForClicks("LeftButtonUp", "RightButtonUp")
-						f.ContainerHolder[i].FilterIcon:SetScript("OnShow", function(self)
-							self:SetFrameLevel(self:GetParent():GetFrameLevel()+1)
-						end)
-
-						--Create the texture showing the assignment type
-						f.ContainerHolder[i].FilterIcon.Icon = f.ContainerHolder[i].FilterIcon:CreateTexture(nil, "OVERLAY")
-						f.ContainerHolder[i].FilterIcon.Icon:SetAtlas("bags-icon-consumables", true)
-						f.ContainerHolder[i].FilterIcon.Icon:Point("CENTER")
-						
-						--Re-route various mouse events to the underlying container bag icon
-						f.ContainerHolder[i].FilterIcon:SetScript("OnEnter", function(self)
-							local target = self:GetParent()
-							target:GetScript("OnEnter")(target);
-						end)
-						f.ContainerHolder[i].FilterIcon:SetScript("OnLeave", function(self)
-							local target = self:GetParent()
-							target:GetScript("OnLeave")(target);
-						end)
-						f.ContainerHolder[i].FilterIcon:SetScript("OnClick", function(self, btn)
-							local target = self:GetParent()
-							target:GetScript("OnClick")(target, btn);
-						end)
-						f.ContainerHolder[i].FilterIcon:SetScript("OnReceiveDrag", function(self)
-							local target = self:GetParent()
-							target:GetScript("OnReceiveDrag")(target);
 						end)
 					end
 				end
@@ -796,7 +803,7 @@ function B:Layout(isBank)
 				f.ContainerHolder[i].iconTexture = _G[f.ContainerHolder[i]:GetName()..'IconTexture'];
 				f.ContainerHolder[i].iconTexture:SetInside()
 				f.ContainerHolder[i].iconTexture:SetTexCoord(unpack(E.TexCoords))
-				if i == 1 then --backpack
+				if bagID == 0 then --backpack
 					f.ContainerHolder[i].iconTexture:SetTexture("Interface\\Buttons\\Button-Backpack-Up");
 				end
 

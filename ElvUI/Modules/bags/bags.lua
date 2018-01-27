@@ -630,7 +630,8 @@ local function ContainerFrameFilterDropDown_Initialize(self, level)
 					end
 					if (value) then
 						frame.localFlag = i;
-						frame.FilterIcon.Icon:SetAtlas(BAG_FILTER_ICONS[i]);
+						frame.FilterIcon.Icon:SetTexture(BAG_FILTER_ICONS[i]);
+						frame.FilterIcon.Icon:SetTexCoord(unpack(E.TexCoords));
 						frame.FilterIcon:Show();
 					else
 						frame.FilterIcon:Hide();
@@ -710,7 +711,7 @@ local function CreateFilterIcon(parent)
 	--Create FilterIcon element needed for item type assignment
 	parent.FilterIcon = CreateFrame("Button", nil, parent)
 	parent.FilterIcon:Hide()
-	parent.FilterIcon:Size(20, 20)
+	parent.FilterIcon:Size(18, 18)
 	parent.FilterIcon:CreateBackdrop("Transparent")
 	parent.FilterIcon:Point("TOPLEFT", parent, "TOPLEFT", E.Border, -E.Border)
 	parent.FilterIcon:RegisterForClicks("LeftButtonUp", "RightButtonUp")
@@ -722,7 +723,7 @@ local function CreateFilterIcon(parent)
 	parent.FilterIcon.Icon = parent.FilterIcon:CreateTexture(nil, "BORDER")
 	parent.FilterIcon.Icon:SetTexture("Interface\\ICONS\\INV_Potion_93")
 	parent.FilterIcon.Icon:SetTexCoord(unpack(E.TexCoords))
-	parent.FilterIcon.Icon:Size(20, 20)
+	parent.FilterIcon.Icon:Size(18, 18)
 	parent.FilterIcon.Icon:Point("CENTER")
 
 	--Re-route various mouse events to the underlying container bag icon

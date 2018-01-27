@@ -70,7 +70,6 @@ local UpdateSlot = UpdateSlot
 local UseContainerItem = UseContainerItem
 local BAG_FILTER_ASSIGN_TO = BAG_FILTER_ASSIGN_TO
 local BAG_FILTER_CLEANUP = BAG_FILTER_CLEANUP
-local BAG_FILTER_ICONS = BAG_FILTER_ICONS
 local BAG_FILTER_IGNORE = BAG_FILTER_IGNORE
 local BAG_FILTER_LABELS = BAG_FILTER_LABELS
 local CONTAINER_OFFSET_X, CONTAINER_OFFSET_Y = CONTAINER_OFFSET_X, CONTAINER_OFFSET_Y
@@ -113,6 +112,12 @@ B.ProfessionColors = {
 	[0x0400] = {105/255, 79/255,  7/255}, -- Mining
 	[0x8000] = {107/255, 150/255, 255/255}, -- Fishing
 	[0x010000] = {222/255, 13/255,  65/255} -- Cooking
+}
+
+local BAG_FILTER_ICONS = {
+	[LE_BAG_FILTER_FLAG_EQUIPMENT] = "Interface\\ICONS\\INV_Chest_Plate10",
+	[LE_BAG_FILTER_FLAG_CONSUMABLES] = "Interface\\ICONS\\INV_Potion_93",
+	[LE_BAG_FILTER_FLAG_TRADE_GOODS] = "Interface\\ICONS\\INV_Fabric_Silk_02",
 }
 
 function B:GetContainerFrame(arg)
@@ -692,7 +697,8 @@ local function Container_OnShow(self)
 				active = GetBagSlotFlag(self.id, i)
 			end
 			if (active) then
-				self.FilterIcon.Icon:SetAtlas(BAG_FILTER_ICONS[i], true)
+				self.FilterIcon.Icon:SetTexture(BAG_FILTER_ICONS[i])
+				self.FilterIcon.Icon:SetTexCoord(unpack(E.TexCoords))
 				self.FilterIcon:Show()
 				break
 			end
@@ -704,16 +710,19 @@ local function CreateFilterIcon(parent)
 	--Create FilterIcon element needed for item type assignment
 	parent.FilterIcon = CreateFrame("Button", nil, parent)
 	parent.FilterIcon:Hide()
-	parent.FilterIcon:Size(24, 24)
-	parent.FilterIcon:Point("CENTER", parent, "TOPLEFT", 9, -10)
+	parent.FilterIcon:Size(20, 20)
+	parent.FilterIcon:CreateBackdrop("Transparent")
+	parent.FilterIcon:Point("TOPLEFT", parent, "TOPLEFT", E.Border, -E.Border)
 	parent.FilterIcon:RegisterForClicks("LeftButtonUp", "RightButtonUp")
 	parent.FilterIcon:SetScript("OnShow", function(self)
 		self:SetFrameLevel(self:GetParent():GetFrameLevel()+1)
 	end)
 
 	--Create the texture showing the assignment type
-	parent.FilterIcon.Icon = parent.FilterIcon:CreateTexture(nil, "OVERLAY")
-	parent.FilterIcon.Icon:SetAtlas("bags-icon-consumables", true)
+	parent.FilterIcon.Icon = parent.FilterIcon:CreateTexture(nil, "BORDER")
+	parent.FilterIcon.Icon:SetTexture("Interface\\ICONS\\INV_Potion_93")
+	parent.FilterIcon.Icon:SetTexCoord(unpack(E.TexCoords))
+	parent.FilterIcon.Icon:Size(20, 20)
 	parent.FilterIcon.Icon:Point("CENTER")
 
 	--Re-route various mouse events to the underlying container bag icon

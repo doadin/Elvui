@@ -77,6 +77,8 @@ local CONTAINER_SCALE = CONTAINER_SCALE
 local CONTAINER_SPACING, VISIBLE_CONTAINER_SPACING = CONTAINER_SPACING, VISIBLE_CONTAINER_SPACING
 local CONTAINER_WIDTH = CONTAINER_WIDTH
 local LE_BAG_FILTER_FLAG_EQUIPMENT = LE_BAG_FILTER_FLAG_EQUIPMENT
+local LE_BAG_FILTER_FLAG_CONSUMABLES = LE_BAG_FILTER_FLAG_CONSUMABLES
+local LE_BAG_FILTER_FLAG_TRADE_GOODS = LE_BAG_FILTER_FLAG_TRADE_GOODS
 local LE_BAG_FILTER_FLAG_IGNORE_CLEANUP = LE_BAG_FILTER_FLAG_IGNORE_CLEANUP
 local LE_BAG_FILTER_FLAG_JUNK = LE_BAG_FILTER_FLAG_JUNK
 local LE_ITEM_QUALITY_POOR = LE_ITEM_QUALITY_POOR
@@ -444,6 +446,7 @@ function B:UpdateSlot(bagID, slotID)
 	slot.itemLevel:SetText("")
 	if B.ProfessionColors[bagType] then
 		slot:SetBackdropBorderColor(unpack(B.ProfessionColors[bagType]))
+		slot.ignoreBorderColors = true
 	elseif (clink) then
 		local iLvl, itemEquipLoc, itemClassID, itemSubClassID
 		slot.name, _, _, _, _, _, _, _, itemEquipLoc, _, _, itemClassID, itemSubClassID = GetItemInfo(clink);
@@ -1087,18 +1090,23 @@ function B:UpdateReagentSlot(slotID)
 		-- color slot according to item quality
 		if questId and not isActiveQuest then
 			slot:SetBackdropBorderColor(1.0, 0.3, 0.3);
+			slot.ignoreBorderColors = true
 			if (slot.questIcon) then
 				slot.questIcon:Show();
 			end
 		elseif questId or isQuestItem then
 			slot:SetBackdropBorderColor(1.0, 0.3, 0.3);
+			slot.ignoreBorderColors = true
 		elseif slot.rarity and slot.rarity > 1 then
 			slot:SetBackdropBorderColor(r, g, b);
+			slot.ignoreBorderColors = true
 		else
 			slot:SetBackdropBorderColor(unpack(E.media.bordercolor));
+			slot.ignoreBorderColors = nil
 		end
 	else
 		slot:SetBackdropBorderColor(unpack(E.media.bordercolor));
+		slot.ignoreBorderColors = nil
 	end
 
 	if(C_NewItemsIsNewItem(bagID, slotID)) then
@@ -1153,7 +1161,7 @@ function B:OnEvent(event, ...)
 		self:UpdateAllSlots()
 	elseif event == 'PLAYERREAGENTBANKSLOTS_CHANGED' then
 		B:UpdateReagentSlot(...)
-	elseif (event == "QUEST_ACCEPTED" or event == "QUEST_REMOVED") and self:IsShown() then
+	elseif (event == 'QUEST_ACCEPTED' or event == 'QUEST_REMOVED') and self:IsShown() then
 		self:UpdateAllSlots()
 	end
 end
@@ -1312,8 +1320,8 @@ function B:ContructContainerFrame(name, isBank)
 	f:RegisterEvent('BAG_UPDATE_COOLDOWN')
 	f:RegisterEvent('BAG_UPDATE');
 	f:RegisterEvent('PLAYERBANKSLOTS_CHANGED');
-	f:RegisterEvent("QUEST_ACCEPTED");
-	f:RegisterEvent("QUEST_REMOVED");
+	f:RegisterEvent('QUEST_ACCEPTED');
+	f:RegisterEvent('QUEST_REMOVED');
 	f:SetScript('OnEvent', B.OnEvent);
 	f:Hide();
 

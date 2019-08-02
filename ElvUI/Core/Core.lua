@@ -1798,10 +1798,6 @@ function E:Initialize()
 		E:Install()
 	end
 
-	if E:HelloKittyFixCheck() then
-		E:HelloKittyFix()
-	end
-
 	if E.db.general.kittys then
 		E:CreateKittys()
 		E:Delay(5, E.Print, E, L["Type /hellokitty to revert to old settings."])

@@ -1575,10 +1575,6 @@ function E:Initialize()
 		self:Install()
 	end
 
-	if self:HelloKittyFixCheck() then
-		self:HelloKittyFix()
-	end
-
 	if self.db.general.kittys then
 		self:CreateKittys()
 		self:Delay(5, self.Print, self, L["Type /hellokitty to revert to old settings."])
